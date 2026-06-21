@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="GNVIC - Generador de Narrativas Visuales Interactivas y Críticas. Plataforma de co-creación de novelas gráficas, cómics y manga con perspectiva epistémica.">
+    <meta name="theme-color" content="#050505">
+    <title>GNVIC piloto taller — NARZU</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta property="og:title" content="GNVIC — Generador de Narrativas Visuales, Interactivas y Críticas">
+    <meta property="og:description" content="Plataforma de co-creación de narrativas visuales secuenciales como artefacto epistémico. Proyecto Artefactos Epistémicos, DCSP, Universidad Iberoamericana Ciudad de México.">
+    <meta property="og:image" content="inicio.jpg">
+    <meta property="og:type" content="website">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,300..900&display=swap"
+        rel="stylesheet">
+
+    <!-- Multi-CDN Fallback para jsPDF y html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        if (!window.jspdf) {
+            console.warn("CDNjs falló, intentando UNPKG...");
+            document.write('<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"><\/script>');
+        }
+        if (!window.html2canvas) {
+            console.warn("CDNjs falló para html2canvas, intentando UNPKG...");
+            document.write('<script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        window.GN_VERSION = "2.1.0-PILOTO-TALLER";
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="imagesB64.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+
+    <!-- NOISE TEXTURE OVERLAY (fixed, rendered once, never recomposed) -->
+    <div id="noise-overlay"
+        style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:0; background-image:var(--noise-bg, none); background-repeat:repeat;">
+    </div>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <nav class="sidebar-nav" aria-label="Navegación principal">
+        <div class="sidebar-nav-container">
+            <div class="sidebar-text-top">G N V I C</div>
+
+            <ul class="timeline-menu pilot-steps">
+                <li class="timeline-item active" data-nav-target="vista-inicio">
+                    <button type="button" class="timeline-button" aria-label="Ir a inicio" onclick="navigateToPilotStep('home')">
+                        <span class="timeline-dot"><span>1</span></span>
+                        <span class="timeline-label"><span class="timeline-label__step">Inicio</span><span class="timeline-label__hint">Portada</span></span>
+                    </button>
+                </li>
+                <li class="timeline-item" data-nav-target="vista-artefactos">
+                    <button type="button" class="timeline-button" aria-label="Ir a NARZU" onclick="navigateToPilotStep('narzu')">
+                        <span class="timeline-dot"><span>2</span></span>
+                        <span class="timeline-label"><span class="timeline-label__step">NARZU</span><span class="timeline-label__hint">Artefacto</span></span>
+                    </button>
+                </li>
+                <li class="timeline-item" data-nav-target="vista-proyecto">
+                    <button type="button" class="timeline-button" aria-label="Ir a episodios de NARZU" onclick="navigateToPilotStep('episodes')">
+                        <span class="timeline-dot"><span>3</span></span>
+                        <span class="timeline-label"><span class="timeline-label__step">Episodios</span><span class="timeline-label__hint">Lista</span></span>
+                    </button>
+                </li>
+                <li class="timeline-item" data-nav-target="vista-mesa-de-luz">
+                    <button type="button" class="timeline-button" aria-label="Ir a mesa de luz" onclick="navigateToPilotStep('mesa')">
+                        <span class="timeline-dot"><span>4</span></span>
+                        <span class="timeline-label"><span class="timeline-label__step">Mesa</span><span class="timeline-label__hint">6 viñetas</span></span>
+                    </button>
+                </li>
+                <li class="timeline-item" data-nav-target="cierre">
+                    <button type="button" class="timeline-button" aria-label="Ir al cierre epistémico" onclick="navigateToPilotStep('cierre')">
+                        <span class="timeline-dot"><span>5</span></span>
+                        <span class="timeline-label"><span class="timeline-label__step">Cierre</span><span class="timeline-label__hint">PDF</span></span>
+                    </button>
+                </li>
+                <li class="timeline-item" data-nav-target="sobre-gnvic">
+                    <button type="button" class="timeline-button" aria-label="Abrir información sobre GNVIC" onclick="cerrarTodosLosModales(); abrirModalSobre(); setActiveDot(this)">
+                        <span class="timeline-dot timeline-dot--info"><span>i</span></span>
+                        <span class="timeline-label"><span class="timeline-label__step">Sobre GNVIC</span><span class="timeline-label__hint">Contexto</span></span>
+                    </button>
+                </li>
+                <li class="timeline-item" data-nav-target="vista-configuracion-api" style="display:none;">
+                    <button type="button" class="timeline-button" aria-label="Abrir configuración API" onclick="cerrarTodosLosModales(); abrirModalConfig(); setActiveDot(this)">
+                        <span class="timeline-dot"></span>
+                        <span class="timeline-label">Configuración API</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="sidebar-text-bottom">M E N Ú</div>
+        </div>
+    </nav>
+
+    <!-- BREADCRUMB -->
+    <div id="breadcrumb" class="breadcrumb-nav" style="display:none;">
+        <button type="button" class="breadcrumb-item" onclick="navigateTo('vista-inicio')">Inicio</button>
+        <span class="breadcrumb-sep">/</span>
+        <button type="button" class="breadcrumb-item" id="br-artefactos" onclick="navigateTo('vista-artefactos')">NARZU</button>
+        <span class="breadcrumb-sep" id="br-sep-proyecto" style="display:none;">/</span>
+        <span class="breadcrumb-item" id="br-proyecto" style="display:none;"></span>
+        <span class="breadcrumb-sep" id="br-sep-episodio" style="display:none;">/</span>
+        <span class="breadcrumb-item" id="br-episodio" style="display:none;"></span>
+    </div>
+
+    <!-- MAIN VIEW -->
+    <div id="vista-inicio" class="view-container active">
+        <!-- Imagen central que se funde con el fondo -->
+        <div class="center-image-container">
+            <div class="hero-image-wrapper">
+                <!-- NOTA: Guarda la imagen como 'inicio.jpg' en la raíz del repositorio para que se muestre aquí -->
+                <img src="inicio.jpg" alt="Ilustración central" class="hero-main-img"
+                    onerror="this.src='https://via.placeholder.com/1200x800/f6f6f6/888888?text=Por+favor,+guarda+la+imagen+como+inicio.jpg+en+la+raiz'">
+
+                <!-- Lupa interactiva de subtexto -->
+                <div class="lupa-obj">
+                    <div class="lupa-glass">
+                        <img src="inicio.jpg" class="lupa-zoom-img" alt="Zoom interior"
+                            onerror="this.src='https://via.placeholder.com/1200x800/f6f6f6/888888?text=Por+favor,+guarda+la+imagen+como+inicio.jpg+en+la+raiz'">
+                        <div class="lupa-text">
+                            <span class="lupa-quijote">Cada parte de la imagen fotográfica lleva alguna información que
+                                contribuye a su afirmación total.</span>
+                        </div>
+                    </div>
+                    <div class="lupa-handle"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Texto inferior intercalado gris / rojo -->
+        <div class="bottom-text">
+            <div>
+                <span class="red">Generador de narrativas visuales interactivas y críticas</span>
+                <span class="gray">se desarrolla en el marco de ARTEFACTOS EPISTÉMICOS.</span>
+            </div>
+            <div style="margin-top: 0.3rem;">
+                <span class="gray">Un proyecto de </span><span class="gray" style="font-weight:700;">Teresa
+                    Márquez</span><span class="gray">. </span><span class="red">DCSP | Ibero.</span>
+            </div>
+            <button class="pilot-start-cta" type="button" onclick="navigateTo('vista-artefactos')">Entrar a NARZU</button>
+        </div>
+    </div>
+
+    <!-- VISTA ARTEFACTOS -->
+    <div id="vista-artefactos" class="view-container">
+        <header style="padding: 1rem 0 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='60' viewBox='0 0 200 60'%3E%3Ctext x='0' y='38' fill='%23ffffff' font-family='Arial, sans-serif' font-size='24' font-weight='700' letter-spacing='2'%3EIBERO%3C/text%3E%3C/svg%3E" alt="Logo Universidad" class="logo"
+                style="margin-bottom: 0; filter: grayscale(1) brightness(1.5);">
+        </header>
+
+        <div class="view-header"
+            style="margin-bottom: 2rem; padding-top: 1.5rem; position: relative; align-items: center;">
+            <div style="flex: 1;">
+                <h1
+                    style="font-size: 3rem; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: -1.5px; line-height: 1; text-transform: uppercase;">
+                    NARZU</h1>
+                <p
+                    style="color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-size: 0.75rem; margin-top: 0.8rem; margin-bottom: 0;">
+                    Artefacto único del piloto: 6 viñetas, cierre epistémico y PDF</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <button class="btn-hover-subtle" onclick="navigateTo('vista-inicio')"><span
+                        style="font-size: 1.1rem; line-height: 1;">&larr;</span> Inicio</button>
+                <button class="btn-icon-circle" onclick="navigateTo('vista-configuracion-api')"
+                    title="Configuración de APIs" aria-label="Configuración de APIs">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="lista-proyectos" style="margin-top: 1rem;"></div>
+    </div>
+
+    <!-- VISTA CONFIGURACIÓN API -->
+    <div id="vista-configuracion-api" class="view-container config-view" style="background:#eef2f8;">
+        <div class="config-shell"
+            style="max-width: 1160px; margin: 0 auto; background: #f8fafc; border: 1px solid #dde3ee; border-radius: 24px; overflow: hidden; box-shadow: 0 26px 80px rgba(15,23,42,0.14); color: #101828;">
+            <div class="config-shell__header"
+                style="display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1.3rem 1.7rem; border-bottom:1px solid #e7ebf2; background:#ffffff;">
+                <div style="display:flex; align-items:center; gap:0.9rem;">
+                    <div
+                        style="width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#eef4ff; color:#5a7dd6;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="7" cy="17" r="3"></circle>
+                            <circle cx="17" cy="7" r="3"></circle>
+                            <path d="M10 15l4-6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 style="margin:0; font-size:1.95rem; font-weight:900; color:#101828; letter-spacing:-0.4px;">
+                            Configuración de IA</h1>
+                    </div>
+                </div>
+                <button type="button" onclick="closeConfigPage()"
+                    style="width:42px; height:42px; border-radius:50%; border:1px solid #d7ddea; background:#fff; color:#667085; font-size:1.8rem; line-height:1; cursor:pointer;">×</button>
+            </div>
+
+            <form class="config-form" onsubmit="guardarConfiguracionBYOK(event)"
+                style="padding:1.7rem; display:flex; flex-direction:column; gap:1.2rem;">
+                <section
+                    style="padding:1.15rem 1.25rem; border:1px solid #efdfc7; background:#fff9f1; border-radius:18px;">
+                    <div style="color:#b57115; font-size:0.98rem; line-height:1.55; font-weight:600;">
+                        <strong>Bring Your Own Key (BYOK):</strong> GNVIC requiere tu propia clave de OpenRouter para
+                        funcionar. Tu clave se guarda solo en tu navegador.
+                    </div>
+                    <a href="https://openrouter.ai/" target="_blank" rel="noopener noreferrer"
+                        style="display:inline-block; margin-top:0.6rem; color:#b57115; text-decoration:none; font-size:0.92rem; font-weight:600;">Obtener
+                        clave en OpenRouter.ai ↗</a>
+                </section>
+
+                <section style="padding:1.3rem; border:1px solid #e4e9f2; background:#ffffff; border-radius:18px;">
+                    <label for="config-openrouter-key"
+                        style="display:block; color:#101828; font-size:0.95rem; font-weight:700; margin-bottom:0.7rem;">API
+                        Key de OpenRouter</label>
+                    <div style="position:relative;">
+                        <input type="password" id="config-openrouter-key" class="manifesto-input"
+                            style="width:100%; color:#101828; background:#fff; border:1px solid #d7ddea; border-radius:12px; padding:1rem 3.2rem 1rem 1rem; box-sizing:border-box;"
+                            placeholder="sk-or-v1-...">
+                        <button type="button" onclick="toggleConfigApiKeyVisibility()"
+                            style="position:absolute; top:50%; right:0.8rem; transform:translateY(-50%); border:none; background:transparent; color:#98a2b3; cursor:pointer; padding:0.2rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <div
+                        class="config-key-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1rem; margin-top:1rem;">
+                        <div>
+                            <div
+                                style="font-size:0.78rem; text-transform:uppercase; letter-spacing:0.8px; color:#667085; margin-bottom:0.35rem;">
+                                Llave guardada</div>
+                            <div id="config-status-key"
+                                style="font-size:0.92rem; color:#101828; font-family:monospace;">No configurada</div>
+                        </div>
+                        <div>
+                            <label for="config-openrouter-base-url"
+                                style="display:block; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.8px; color:#667085; margin-bottom:0.35rem;">Base
+                                URL</label>
+                            <input type="text" id="config-openrouter-base-url" class="manifesto-input"
+                                style="width:100%; color:#101828; background:#fff; border:1px solid #d7ddea; border-radius:12px; padding:0.9rem 1rem; box-sizing:border-box;"
+                                placeholder="https://openrouter.ai/api/v1">
+                            <div id="config-status-base-url" style="display:none;">https://openrouter.ai/api/v1</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section style="padding:1.25rem; border:1px solid #e4e9f2; background:#ffffff; border-radius:18px;">
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:0.9rem;">
+                        <div style="display:flex; align-items:center; gap:0.7rem;">
+                            <div
+                                style="width:30px; height:30px; border-radius:10px; background:#edf4ff; color:#6b9ee8; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 style="margin:0; color:#101828; font-size:1.15rem; font-weight:800;">Modelo de Texto
+                                </h3>
+                                <div id="config-status-text-model"
+                                    style="margin-top:0.2rem; color:#667085; font-size:0.88rem;">Pendiente</div>
+                            </div>
+                        </div>
+                        <div id="config-selected-text-pricing"
+                            style="color:#667085; font-size:0.82rem; text-align:right; line-height:1.45; max-width:340px;">
+                            Costo no consultado todavía.</div>
+                    </div>
+                    <input type="text" id="config-openrouter-text-model" class="manifesto-input" style="display:none;">
+                    <input type="text" id="config-model-search-text" class="manifesto-input"
+                        style="width:100%; color:#101828; background:#fff; border:1px solid #cbd5e1; border-radius:12px; padding:0.95rem 1rem; box-sizing:border-box; margin-bottom:0.85rem;"
+                        placeholder="Buscar modelo por nombre o ID..." aria-label="Buscar modelo de texto por nombre o ID" oninput="renderOpenRouterModelLists()">
+                    <div id="config-text-suggestions"
+                        style="display:flex; flex-wrap:wrap; gap:0.55rem; margin-bottom:0.85rem;"></div>
+                    <div id="config-text-models-list"
+                        style="display:grid; gap:0.65rem; max-height:310px; overflow:auto; padding-right:0.15rem;">
+                    </div>
+                </section>
+
+                <section style="padding:1.25rem; border:1px solid #e4e9f2; background:#ffffff; border-radius:18px;">
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:0.9rem;">
+                        <div style="display:flex; align-items:center; gap:0.7rem;">
+                            <div
+                                style="width:30px; height:30px; border-radius:10px; background:#fff0f6; color:#d75f9a; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <path d="m21 15-5-5L5 21"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 style="margin:0; color:#101828; font-size:1.15rem; font-weight:800;">Modelo de
+                                    Imágenes</h3>
+                                <div id="config-status-image-model"
+                                    style="margin-top:0.2rem; color:#667085; font-size:0.88rem;">Pendiente</div>
+                            </div>
+                        </div>
+                        <div id="config-selected-image-pricing"
+                            style="color:#667085; font-size:0.82rem; text-align:right; line-height:1.45; max-width:340px;">
+                            Costo no consultado todavía.</div>
+                    </div>
+                    <input type="text" id="config-openrouter-image-model" class="manifesto-input" style="display:none;">
+                    <input type="text" id="config-model-search-image" class="manifesto-input"
+                        style="width:100%; color:#101828; background:#fff; border:1px solid #cbd5e1; border-radius:12px; padding:0.95rem 1rem; box-sizing:border-box; margin-bottom:0.85rem;"
+                        placeholder="Buscar modelo por nombre o ID..." aria-label="Buscar modelo de imágenes por nombre o ID" oninput="renderOpenRouterModelLists()">
+                    <div id="config-image-suggestions"
+                        style="display:flex; flex-wrap:wrap; gap:0.55rem; margin-bottom:0.85rem;"></div>
+                    <div id="config-image-models-list"
+                        style="display:grid; gap:0.65rem; max-height:310px; overflow:auto; padding-right:0.15rem;">
+                    </div>
+                </section>
+
+                <div id="config-models-status" class="config-status">
+                    Ingresa tu API key y consulta el catálogo para ver modelos disponibles, costo y sugerencias.
+                </div>
+
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; padding-top:0.2rem;">
+                    <button type="button" class="btn-secondary"
+                        style="width:auto; padding:0.95rem 1.25rem; background:#fff; color:#344054; border:1px solid #d7ddea;"
+                        onclick="fetchOpenRouterModels(true)">Actualizar catálogo</button>
+                    <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+                        <button type="button" class="btn-secondary"
+                            style="width:auto; padding:0.95rem 1.5rem; background:#fff; color:#344054; border:1px solid #d7ddea;"
+                            onclick="closeConfigPage()">Cancelar</button>
+                        <button type="submit" class="btn-primary"
+                            style="width:auto; padding:0.95rem 1.6rem; background:#111827; color:#fff; border:none;">Guardar
+                            Configuración</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- EPISODES VIEW (formerly Project View) -->
+    <div id="vista-proyecto" class="view-container">
+        <header style="padding: 1rem 0 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='60' viewBox='0 0 200 60'%3E%3Ctext x='0' y='38' fill='%23ffffff' font-family='Arial, sans-serif' font-size='24' font-weight='700' letter-spacing='2'%3EIBERO%3C/text%3E%3C/svg%3E" alt="Logo Universidad" class="logo"
+                style="margin-bottom: 0; filter: grayscale(1) brightness(1.5);">
+        </header>
+
+        <div class="view-header" style="margin-bottom: 2rem; padding-top: 1.5rem; align-items: center;">
+            <div style="flex: 1;">
+                <h1 id="vp-titulo"
+                    style="font-size: 3.5rem; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: -1.5px; line-height: 1; text-transform: uppercase;">
+                    NARZU</h1>
+                <p
+                    style="color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-size: 0.8rem; margin-top: 0.8rem; margin-bottom: 0;">
+                    Episodios del piloto</p>
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <button class="btn-primary"
+                    id="btn-nuevo-episodio"
+                    style="width: auto; padding: 0.5rem 2rem; display:flex; align-items:center; gap:0.6rem;"
+                    onclick="abrirDefinirEpisodio()">
+                    <span style="font-size:1.2rem; font-weight: bold;">+</span> <span id="btn-nuevo-episodio-label"
+                        style="font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Nuevo Episodio</span>
+                </button>
+                <button class="btn-secondary pilot-admin-action" style="width: auto; padding: 0.5rem 2rem;"
+                    onclick="abrirModalNuevo(currentProjectId)">Editar Datos</button>
+                <button class="btn-secondary" style="width: auto; padding: 0.5rem 2rem;"
+                    onclick="navigateTo('vista-artefactos')"><span
+                        style="font-size: 1.1rem; line-height: 1;">&larr;</span> NARZU</button>
+            </div>
+        </div>
+
+        <div class="episodes-content" style="max-width: 900px; margin: 0 auto; width: 100%;">
+            <section
+                style="background: rgba(255,255,255,0.02); padding: 3.5rem; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.4);">
+                <h4 id="vp-episodios-title"
+                    style="font-size: 1.5rem; font-weight: 900; text-transform: uppercase; margin-top: 0; color: var(--accent); letter-spacing: 1px; margin-bottom: 1rem;">
+                    Episodios del piloto</h4>
+                <p id="vp-episodios-help"
+                    style="color:var(--text-muted); font-size: 1rem; margin-bottom: 3rem; line-height: 1.6; max-width: 600px;">
+                    Cada nuevo episodio de 6 viñetas aparecerá aquí junto con "El dilema del color".</p>
+
+                <div id="vp-lista-episodios" style="margin-bottom: 3rem;"></div>
+            </section>
+        </div>
+
+        <!-- Hidden inputs for compatibility (still used by JS even if not visible) -->
+        <div style="display:none;">
+            <textarea id="vp-trama-edit"></textarea>
+            <select id="vp-subtexto-edit">
+                <option value="Otro"></option>
+            </select>
+            <div id="vp-subtexto-otra-container"><input type="text" id="vp-subtexto-otra-edit"></div>
+            <textarea id="vp-desc-subtexto-edit"></textarea>
+            <div id="vp-lista-personajes"></div>
+        </div>
+    </div>
+
+    <!-- EPISODE DEFINITION VIEW -->
+    <div id="vista-definir-episodio" class="view-container">
+        <header style="padding: 1rem 0 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='60' viewBox='0 0 200 60'%3E%3Ctext x='0' y='38' fill='%23ffffff' font-family='Arial, sans-serif' font-size='24' font-weight='700' letter-spacing='2'%3EIBERO%3C/text%3E%3C/svg%3E" alt="Logo Universidad" class="logo"
+                style="margin-bottom: 0; filter: grayscale(1) brightness(1.5);">
+        </header>
+
+        <div class="view-header" style="margin-bottom: 2rem; padding-top: 1.5rem;">
+            <div style="flex: 1;">
+                <h1 id="vde-titulo"
+                    style="font-size: 2.5rem; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: -1px; line-height: 1;">
+                    Crea tu conflicto</h1>
+                <p
+                    style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem; line-height:1.55;">
+                    Inventa un episodio propio dentro del universo NARZU. La muestra “El dilema del color” sirve como referencia; aquí defines otro nudo dramático con los mismos personajes y marco narrativo.</p>
+            </div>
+            <button class="btn-secondary"
+                style="width: auto; padding: 0.8rem 2.5rem; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);"
+                onclick="navigateTo('vista-proyecto')">← Volver al Artefacto</button>
+        </div>
+
+        <!-- Artifact Context Card -->
+        <section id="vde-ficha-artefacto"
+            style="background: rgba(224, 0, 52, 0.04); border: 1px solid rgba(224, 0, 52, 0.15); border-left: 4px solid var(--accent); padding: 2rem; margin-bottom: 3rem; border-radius: 4px;">
+            <h4
+                style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin: 0 0 1.5rem 0;">
+                Universo NARZU</h4>
+            <div class="episode-context-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div>
+                    <div style="margin-bottom: 1rem;">
+                        <span
+                            style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Título</span>
+                        <span id="vde-ctx-titulo"
+                            style="color: var(--text-main); font-weight: 700; font-size: 1.1rem;"></span>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <span
+                            style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Género</span>
+                        <span id="vde-ctx-genero" style="color: var(--text-main); font-size: 0.95rem;"></span>
+                    </div>
+                    <div>
+                        <span
+                            style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Subtexto</span>
+                        <span id="vde-ctx-subtexto" style="color: var(--text-main); font-size: 0.95rem;"></span>
+                    </div>
+                </div>
+                <div>
+                    <span
+                        style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Marco narrativo</span>
+                    <p id="vde-ctx-trama"
+                        style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0; max-height: 150px; overflow-y: auto;">
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Episode Data -->
+        <div class="episode-creation-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 4rem;">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div>
+                    <label for="vde-nombre"
+                        style="font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Título de tu episodio</label>
+                    <input type="text" id="vde-nombre" class="manifesto-input"
+                        style="width:100%; font-size: 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.1);"
+                        placeholder="Ej. Don Tico y la tarea imposible">
+                </div>
+                <div>
+                    <label for="vde-autor"
+                        style="font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Autor
+                        / Guionista</label>
+                    <input type="text" id="vde-autor" class="manifesto-input"
+                        style="width:100%; font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1);"
+                        placeholder="Tu nombre">
+                </div>
+            </div>
+            <div>
+                <label for="vde-trama"
+                    style="font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Nudo dramático</label>
+                <textarea id="vde-trama" class="manifesto-input"
+                    style="width:100%; font-size: 1.1rem; min-height: 160px; padding: 1rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); line-height: 1.5;"
+                    placeholder="Ej. Dani no quiere usar IA en sus trabajos escolares y va con Don Tico a pedir consejo. El conflicto no es si la IA es buena o mala, sino cómo decidir sin obedecer ciegamente a la herramienta ni rechazarla por miedo."></textarea>
+                <p class="episode-creation-hint">Piensa en una tensión concreta: alguien duda, se resiste, se equivoca, pide ayuda o descubre algo sobre la IA en la escuela.</p>
+            </div>
+        </div>
+
+        <!-- Character Selection Gallery -->
+        <section style="margin-bottom: 4rem;">
+            <div class="episode-section-header"
+                style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+                <div>
+                    <h3
+                        style="font-size: 1.3rem; font-weight: 900; text-transform: uppercase; margin: 0; color: #fff; border-left: 4px solid var(--accent); padding-left: 1rem;">
+                        Personajes de NARZU</h3>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0.5rem 0 0 1.3rem;">Elige quiénes sostienen el conflicto. No necesitas crear personajes nuevos para contar otra historia.</p>
+                </div>
+                <span id="vde-personajes-count" style="color: var(--accent); font-size: 0.85rem; font-weight: 700;">0
+                    seleccionados</span>
+            </div>
+            <div id="vde-galeria-personajes" class="char-grid"
+                style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                <p style="color: var(--text-muted); font-style: italic;">No hay personajes definidos en este artefacto.
+                    Vuelve al artefacto para añadirlos.</p>
+            </div>
+        </section>
+
+        <!-- Viñeta Count Selector -->
+        <section style="margin-bottom: 4rem;">
+            <h3
+                style="font-size: 1.3rem; font-weight: 900; text-transform: uppercase; margin: 0 0 0.5rem 0; color: #fff; border-left: 4px solid var(--accent); padding-left: 1rem;">
+                <span id="vde-extension-title">Secuencia narrativa</span></h3>
+            <p id="vde-extension-help" style="color: var(--text-muted); font-size: 0.8rem; margin: 0 0 1.5rem 1.3rem;">En el piloto del taller cada episodio trabaja con 6 viñetas.</p>
+            <div class="vineta-chips">
+                <button type="button" class="vineta-chip selected" aria-pressed="true" aria-label="6 viñetas fijas para el piloto" onclick="seleccionarVinetas(6, this)">
+                    <span class="chip-num">6</span>
+                    <span class="chip-label">viñetas</span>
+                </button>
+            </div>
+            <input type="hidden" id="vde-num-vinetas" value="6">
+        </section>
+
+        <!-- Action Button -->
+        <div
+            style="display: flex; justify-content: center; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05);">
+            <button class="btn-primary"
+                style="padding: 1.3rem 3.5rem; font-size: 1.1rem; display:flex; align-items:center; gap:0.8rem;"
+                onclick="activarMesaDeLuz()">
+                <span id="btn-ir-mesa-label">Convertir en 6 viñetas</span> <span style="font-size: 1.3rem;">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- LIGHT TABLE VIEW -->
+    <div id="vista-mesa-de-luz" class="view-container">
+        <header style="padding: 0 0 1rem 0;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='60' viewBox='0 0 200 60'%3E%3Ctext x='0' y='38' fill='%23ffffff' font-family='Arial, sans-serif' font-size='24' font-weight='700' letter-spacing='2'%3EIBERO%3C/text%3E%3C/svg%3E" alt="Logo Universidad" class="logo" style="margin-bottom: 0;">
+        </header>
+        <div class="view-header light-table-header">
+            <h2 id="vml-titulo" style="margin:0;">Mesa de Luz</h2>
+            <div class="light-table-toolbar" aria-label="Herramientas de mesa de luz">
+                <button class="btn-secondary light-table-toolbar__back"
+                    onclick="navigateTo('vista-proyecto')">← Volver</button>
+
+                <div class="light-table-toolbar__work">
+                    <button class="btn-secondary light-table-toolbar__button"
+                        onclick="guardarMesaDeLuz()">Guardar cambios</button>
+
+                    <button id="btn-toggle-teatro" class="btn-secondary light-table-toolbar__button light-table-toolbar__button--theater"
+                        onclick="toggleTeatro()">Modo teatro</button>
+
+                    <button class="btn-icon-circle light-table-toolbar__settings" onclick="navigateTo('vista-configuracion-api')"
+                        title="Configuración de APIs" aria-label="Configuración de APIs">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="vml-panels-grid" style="display: flex; flex-direction: column; gap: 2.4rem; margin-top: 1rem;"></div>
+
+        <section id="cierre-reveal-gate" class="cierre-reveal-gate" style="display:none;">
+            <span class="cierre-reveal-gate__eyebrow">Antes del cierre</span>
+            <h3 class="cierre-reveal-gate__title">Pulsa solo cuando tu historia esté completamente terminada</h3>
+            <p class="cierre-reveal-gate__text">El siguiente paso devela el sustrato teórico de GNVIC y abre el cierre epistémico, la portada y la exportación PDF.</p>
+            <button type="button" class="btn-primary cierre-reveal-gate__button" onclick="revelarCierreEpistemico({ scroll: true })">
+                Develar cierre epistémico
+            </button>
+        </section>
+
+        <!-- Cierre epistémico -->
+        <div class="cierre-discursivo-header" id="tw-container-mesa" style="margin-top: 4rem; display:none;">
+            <div class="cierre-divider"></div>
+            <div class="cierre-hero">
+                <span class="cierre-hero__kicker">Cierre epistémico</span>
+                <h2 class="cierre-hero__title">La historia revela lo que piensa</h2>
+                <p class="cierre-hero__text">Este es el umbral conceptual del episodio: después de componer las 6 viñetas, la pieza articula su subtexto crítico, sus referencias y las preguntas para discutir en taller.</p>
+            </div>
+            <div class="cierre-conceptual">
+                <div>
+                    <span class="cierre-conceptual__eyebrow">Paso 1</span>
+                    <h3 class="cierre-conceptual__title">Momento conceptual del artefacto</h3>
+                    <p class="cierre-conceptual__text">Aquí la narrativa deja ver su subtexto. Genera o revisa la develación para articular la lectura teórica, la bibliografía y las preguntas de discusión que sostienen el trabajo pedagógico.</p>
+                </div>
+                <button class="btn-primary cierre-conceptual__action"
+                    id="btn-revelar-mesa" onclick="iniciarTypewriterMesa()">Develar subtexto</button>
+            </div>
+
+            <div id="tw-text-display-mesa" class="typewriter-text manifesto-sentence"
+                style="display:none; color: var(--text-main);"></div>
+
+            <div class="cierre-actions">
+                <div class="cierre-actions__support" aria-label="Salidas complementarias">
+                    <button class="btn-secondary cierre-actions__button"
+                        id="btn-export-ris" onclick="exportarRIS()">Exportar RIS</button>
+                    <button class="btn-secondary cierre-actions__button"
+                        onclick="generarPortada()">Generar portada</button>
+                </div>
+                <div class="cierre-actions__final">
+                    <span class="cierre-actions__eyebrow">Paso final</span>
+                    <div class="cierre-actions__body">
+                        <div>
+                            <h3 class="cierre-actions__title">Documento listo para entrega</h3>
+                            <p class="cierre-actions__text">Exporta el episodio con portada, viñetas, develación y bibliografía.</p>
+                            <div id="pdf-dependency-alert" class="pdf-dependency-alert" role="alert" style="display:none;">
+                                No se pudo cargar el motor de PDF. Revisa la conexión a internet y recarga la página antes de exportar.
+                            </div>
+                        </div>
+                        <button class="btn-primary cierre-actions__pdf" onclick="descargarPDF(event)">Exportar PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vml-portada-c" style="display: none; margin-bottom: 3rem;">
+                <h3 style="font-weight: 900; text-transform: uppercase;">Portada</h3>
+                <button type="button" id="vml-portada-img"
+                    style="width: 100%; max-width: 500px; aspect-ratio: 3/4; border: 4px solid var(--text-main); background: #111111; display:flex; align-items:center; justify-content:center; cursor: zoom-in;"
+                    aria-label="Ampliar portada"
+                    onclick="abrirPortadaDesdeContenedor(this)">
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODALS -->
+    <div id="modal-nuevo-proyecto" class="modal" role="dialog" aria-modal="true" aria-hidden="true"
+        aria-labelledby="np-modal-titulo">
+        <div class="modal-content manifesto">
+            <h2 class="manifesto-title" id="np-modal-titulo">Nuevo Artefacto</h2>
+            <form id="form-nuevo-proyecto" onsubmit="crearProyecto(event)">
+                <input type="hidden" id="np-proyecto-id" value="">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;">
+                    <div>
+                        <div class="manifesto-sentence"
+                            style="font-size: 0.85rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">
+                            Identidad</div>
+                        <div class="manifesto-sentence" style="margin-bottom: 1.5rem;">
+                            Yo <input type="text" id="np-autor" class="manifesto-input" style="min-width: 150px;"
+                                aria-label="Autor del artefacto"
+                                placeholder="tu nombre..." required> declaro...
+                        </div>
+                        <div class="manifesto-sentence" style="font-size: 0.9rem; color: var(--text-muted);">Esta pieza
+                            es un(a):</div>
+                        <div id="grid-genero" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top: 1rem;">
+                            <button type="button" class="manifesto-chip selected" aria-pressed="true"
+                                onclick="selectVisualCard('grid-genero', 'Novela gráfica', event)">Novela gráfica</button>
+                            <button type="button" class="manifesto-chip" aria-pressed="false"
+                                onclick="selectVisualCard('grid-genero', 'Cómic', event)">Cómic</button>
+                            <button type="button" class="manifesto-chip" aria-pressed="false"
+                                onclick="selectVisualCard('grid-genero', 'Manga', event)">Manga</button>
+                        </div>
+                        <input type="hidden" id="np-genero" value="Novela gráfica">
+                    </div>
+
+                    <div>
+                        <div class="manifesto-sentence"
+                            style="font-size: 0.85rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">
+                            Concepto</div>
+                        <div class="manifesto-sentence" style="margin-bottom: 1rem;">
+                            Título: <input type="text" id="np-titulo" class="manifesto-input" style="width: 100%;"
+                                aria-label="Título del artefacto"
+                                placeholder="Ej. El Dilema del Color" required>
+                        </div>
+                        <div class="manifesto-sentence" style="margin-bottom: 1rem;">
+                            Estilo: <input type="text" id="np-estilo" class="manifesto-input" style="width: 100%;"
+                                aria-label="Estilo visual del artefacto"
+                                placeholder="Ej. Cyberpunk oscuro..." required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="manifesto-sentence"
+                    style="margin-top: 4rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem;">
+                    Debatiendo profundamente desde una perspectiva
+                    <div id="grid-subtexto"
+                        style="display:inline-flex; flex-wrap:wrap; vertical-align:middle; gap:1rem; margin:1rem 0;">
+                        <button type="button" class="manifesto-chip selected" aria-pressed="true"
+                            onclick="selectVisualChip('grid-subtexto', 'Filosófica', event)">Filosófica</button>
+                        <button type="button" class="manifesto-chip" aria-pressed="false"
+                            onclick="selectVisualChip('grid-subtexto', 'Sociológica', event)">Sociológica</button>
+                        <button type="button" class="manifesto-chip" aria-pressed="false"
+                            onclick="selectVisualChip('grid-subtexto', 'Política', event)">Política</button>
+                        <button type="button" class="manifesto-chip" aria-pressed="false" onclick="selectVisualChip('grid-subtexto', 'De Género', event)">De
+                            Género</button>
+                        <button type="button" class="manifesto-chip" aria-pressed="false"
+                            onclick="selectVisualChip('grid-subtexto', 'Otra', event)">Otra</button>
+                        <input type="text" id="np-subtexto-otra" class="manifesto-input"
+                            style="display:none; min-width: 200px; margin-left: 1rem; border-bottom: 1px solid var(--accent);"
+                            placeholder="Especificar perspectiva..." aria-label="Perspectiva específica">
+                    </div>
+                    <input type="text" id="np-otro-subtexto" class="manifesto-input"
+                        style="min-width: 120px; border-bottom-width: 1px;" placeholder="¿Cuál?..."
+                        aria-label="Otra perspectiva de subtexto"
+                        onkeyup="if(this.value) { document.getElementById('np-subtexto').value = this.value; document.getElementById('grid-subtexto').querySelectorAll('.manifesto-chip').forEach(el => el.classList.remove('selected')); }">
+                    <input type="hidden" id="np-subtexto" value="Filosófica">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 3rem;">
+                    <div class="manifesto-sentence" style="display:block; margin:0;">
+                        <span
+                            style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); display: block; margin-bottom: 1rem;">La
+                            Narrativa</span>
+                        Donde el argumento establece que... <br>
+                        <textarea id="np-trama" class="manifesto-input"
+                            style="width:100%; font-size: 1.1rem; min-height:150px; text-align:left; margin-top:1rem; line-height: 1.4; border: 1px solid rgba(255,255,255,0.05); padding: 1rem; background: rgba(0,0,0,0.2);"
+                            aria-label="Trama del artefacto"
+                            placeholder="Ej. En un futuro donde los algoritmos deciden todo, un grupo de estudiantes descubre que..."></textarea>
+                    </div>
+
+                    <div class="manifesto-sentence" style="display:block; margin:0;">
+                        <span
+                            style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); display: block; margin-bottom: 1rem;">El
+                            Trasfondo</span>
+                        El subtexto subyacente es... <br>
+                        <textarea id="np-desc-subtexto" class="manifesto-input"
+                            style="width:100%; font-size: 1.1rem; min-height:150px; text-align:left; margin-top:1rem; line-height: 1.4; border: 1px solid rgba(255,255,255,0.05); padding: 1rem; background: rgba(0,0,0,0.2);"
+                            aria-label="Descripción del subtexto"
+                            placeholder="Ej. Un debate crítico estructural frente a la obolescencia humana programada..."></textarea>
+                    </div>
+                </div>
+
+
+
+                <div style="display:flex; gap: 2rem; margin-top: 4rem;">
+                    <button type="submit" id="btn-crear-proyecto" class="btn-primary"
+                        style="font-size: 0.9rem; padding: 1.3rem 2.5rem;">Inscribir Artefacto</button>
+                    <button type="button" class="btn-secondary"
+                        style="font-size: 0.9rem; padding: 1.3rem 2.5rem; border: none;"
+                        onclick="cerrarModalNuevo()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL SOBRE GNVIC -->
+    <div id="modal-sobre-gnvic" class="modal" role="dialog" aria-modal="true" aria-hidden="true"
+        aria-labelledby="modal-sobre-titulo"
+        style="align-items: center; padding-top: 0; background: rgba(0, 0, 0, 0.98);">
+        <div class="modal-content"
+            style="max-width: 1200px; padding: 0; background: transparent; border: none; box-shadow: none;">
+            <div style="display: flex; flex-wrap: wrap; gap: 4rem; align-items: stretch; padding: 4rem 2rem;">
+
+                <!-- Decorative Left Column -->
+                <div
+                    style="flex: 1 1 300px; text-align: left; display: flex; flex-direction: column; justify-content: center;">
+                    <h2 id="modal-sobre-titulo"
+                        style="font-size: clamp(4rem, 8vw, 6.5rem); font-weight: 900; line-height: 0.85; text-transform: uppercase; margin: 0; color: #fff; letter-spacing: -3px;">
+                        GN<br><span style="color: var(--text-main);">VIC</span>
+                    </h2>
+                    <p
+                        style="font-size: 0.85rem; text-transform: uppercase; color: rgba(255,255,255,0.72); font-weight: 800; margin-top: 2.5rem; letter-spacing: 3px; line-height: 1.6;">
+                        Generador de narrativas<br>
+                        visuales interactivas<br>
+                        y críticas.
+                    </p>
+                </div>
+
+                <!-- Text Right Column -->
+                <div
+                    style="flex: 2 1 450px; text-align: left; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5rem;">
+
+                    <p
+                        style="font-size: 1.15rem; color: #b8b8b8; line-height: 1.5; margin-bottom: 2rem; font-weight: 300; letter-spacing: 0.5px;">
+                        El Generador de Narrativas Visuales Interactivas y Críticas (GNVIC) nace como continuación de la
+                        iniciativa VIZIO que exploró una premisa simple pero potente: <strong
+                            style="color: #fff; font-weight: 600;">la imagen sirve para pensar.</strong>
+                        Ahora como parte del proyecto <strong style="color: #fff; font-weight: 600;">“Artefactos
+                            epistémicos”</strong>, la imagen se presenta como pensamiento y,
+                        en sus formas narrativas, como materialización de argumentos.
+                    </p>
+
+                    <p
+                        style="font-size: 1.15rem; color: #b8b8b8; line-height: 1.5; margin-bottom: 2.5rem; font-weight: 300; letter-spacing: 0.5px;">
+                        Se trata de una plataforma metodológica diseñada para tender puentes entre la teoría académica y
+                        la
+                        ficción narrativa. Su propósito es permitir la construcción de narrativas secuenciales breves
+                        —novela gráfica, cómic, fotonovela— que van más allá de lo lúdico para convertirse en vehículos
+                        de pensamiento crítico. A través del conflicto narrativo y la representación visual, las ideas
+                        abstractas adquieren cuerpo, tensión y vida.
+                    </p>
+
+                    <p
+                        style="font-size: 1.15rem; color: #b8b8b8; line-height: 1.5; margin-bottom: 3.5rem; font-weight: 300; letter-spacing: 0.5px;">
+                        Al facilitar la exploración de dilemas filosóficos, sociológicos, políticos, históricos o
+                        culturales, el GNVIC funciona como un <strong style="color: #fff; font-weight: 600;">laboratorio
+                            de ideas para mentes extendidas e híbridas</strong>: un espacio donde las categorías
+                        analíticas no se enuncian sino que se dramatizan,
+                        donde la teoría no se explica sino que se habita.
+                    </p>
+
+                    <p
+                        style="font-size: 0.9rem; color: #8f8f8f; line-height: 1.6; margin-bottom: 3.5rem; font-weight: 300; letter-spacing: 0.3px; border-left: 2px solid var(--accent); padding-left: 1.25rem;">
+                        Esta es una <strong style="color: #d8d8d8; font-weight: 600;">vitrina pública</strong>: muestra el
+                        artefacto NARZU con su contenido precargado, de modo que la propuesta puede recorrerse de inicio a
+                        fin (artefacto, episodio, mesa de luz, cierre epistémico y exportación) sin configurar nada. La
+                        generación de imágenes y de texto en vivo es opcional y se activa solo si la persona usuaria
+                        configura su propia clave de OpenRouter.
+                    </p>
+
+                    <button class="btn-secondary"
+                        style="width: auto; padding: 0.5rem 1.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; border: none; color: rgba(255,255,255,0.78); background: transparent; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.35); transition: color 0.2s;"
+                        onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.78)'"
+                        onclick="cerrarTodosLosModales(); navigateTo('vista-inicio');">
+                        Cerrar Sección
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL IMAGEN AMPLIADA -->
+    <div id="modal-imagen-ampliada" class="modal" role="dialog" aria-modal="true" aria-hidden="true"
+        aria-label="Imagen ampliada"
+        style="align-items: center; padding-top: 0; background: rgba(0, 0, 0, 0.95); cursor: zoom-out;"
+        onclick="cerrarImagenAmpliada()">
+        <img id="img-ampliada" src="" alt="Vista ampliada de la imagen seleccionada"
+            style="max-width: 90vw; max-height: 90vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 4px solid var(--text-main);">
+    </div>
+
+    <!-- RETROALIMENTACIÓN GLOBAL -->
+    <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="save-indicator" class="save-indicator" aria-live="polite" aria-atomic="true">
+        <span class="save-indicator__dot"></span>
+        <span id="save-indicator-text">Guardado</span>
+    </div>
+
+    <div id="modal-confirmacion" class="modal-confirm" role="dialog" aria-modal="true" aria-hidden="true"
+        aria-labelledby="confirm-title" aria-describedby="confirm-message">
+        <div class="modal-confirm__panel">
+            <h2 id="confirm-title" class="modal-confirm__title">Confirmar acción</h2>
+            <p id="confirm-warning" class="modal-confirm__warning" hidden></p>
+            <p id="confirm-message" class="modal-confirm__message">¿Quieres continuar?</p>
+            <div class="modal-confirm__actions">
+                <button type="button" id="confirm-cancel" class="btn-secondary modal-confirm__button">Cancelar</button>
+                <button type="button" id="confirm-accept" class="btn-primary modal-confirm__button modal-confirm__button--danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    <button id="showcase-badge" class="showcase-badge" type="button"
+        title="Vitrina pública con el artefacto NARZU precargado. La generación en vivo es opcional y requiere clave propia de OpenRouter."
+        onclick="abrirModalSobre()">
+        <span class="showcase-badge__dot"></span>
+        <span class="showcase-badge__text">Vitrina · contenido precargado</span>
+    </button>
+
+</body>
+
+</html>
