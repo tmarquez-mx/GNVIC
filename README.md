@@ -22,7 +22,7 @@
 
 ## Qué es
 
-GNVIC es una plataforma de co-creación de narrativas visuales secuenciales (novela gráfica, cómic, manga) concebida como un artefacto epistémico: un dispositivo en el que una posición teórica se traduce en forma narrativa. Continúa la iniciativa VIZIO, que exploró una premisa sencilla y potente, la de que la imagen sirve para pensar, y la lleva un paso más allá: aquí la imagen no acompaña al argumento, lo instancia.
+GNVIC es una plataforma de co-creación de narrativas visuales secuenciales (novela gráfica, cómic, manga) concebida como un artefacto epistémico: un dispositivo en el que una posición teórica se traduce en forma narrativa. Continúa la iniciativa VIZIO, que exploró una premisa sencilla y potente, la de que la imagen sirve para pensar, y la lleva un paso más allá: aquí la imagen no acompaña al argumento, lo habita.
 
 El proyecto se desarrolla en el marco de Artefactos epistémicos, del Departamento de Ciencias Sociales y Políticas de la Universidad Iberoamericana Ciudad de México.
 
@@ -50,7 +50,7 @@ GNVIC se organiza en tres niveles.
 
 ## Un gesto de lectura
 
-La pantalla de inicio incluye una lupa interactiva que, al recorrer la imagen, descubre el texto que late debajo de ella. Es un pequeño gesto de método: leer una imagen es buscar lo que afirma sin decirlo, atender a que cada parte de una imagen contribuye a su afirmación total.
+La pantalla de inicio incluye una lupa interactiva que, al recorrer la imagen, descubre el texto que late debajo de ella. Es un pequeño gesto de método: leer una imagen es buscar lo que afirma sin decirlo.
 
 ---
 
@@ -85,15 +85,15 @@ El prototipo opera bajo el esquema "trae tu propia llave" (BYOK, por sus siglas 
 
 ---
 
-## Estado del prototipo
+## Estado del prototipo (DEMO INTERACTIVA CON GENERACIÓN SIMULADA)
 
-Esta es una versión de prototipo en desarrollo activo. Algunas funciones son experimentales y su comportamiento depende de los modelos que cada persona configure. No constituye todavía una versión final, y tanto la interfaz como el flujo de trabajo pueden cambiar conforme avance la investigación.
+Esta es una versión de prototipo en desarrollo activo. Algunas funciones son experimentales y su comportamiento depende de los modelos que cada persona configure. No constituye todavía una versión final, y tanto la interfaz como el flujo de trabajo pueden cambiar conforme avance la investigación. 
 
 ---
 
 ## Marco institucional y autoría
 
-Proyecto de **Teresa Márquez**, Departamento de Ciencias Sociales y Políticas de la Universidad Iberoamericana Ciudad de México, desarrollado en Techiholic Labs.
+Proyecto de **Teresa Márquez**, Departamento de Ciencias Sociales y Políticas de la Universidad Iberoamericana Ciudad de México.
 
 🔗 [techiholic.netlify.app](https://techiholic.netlify.app/) · [GitHub @tmarquez-mx](https://github.com/tmarquez-mx)
 
