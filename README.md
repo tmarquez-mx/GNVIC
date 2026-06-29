@@ -14,6 +14,8 @@
 
 <img src="assets/inicio.jpg" alt="Pantalla de inicio de GNVIC, con la lupa interactiva que descubre el subtexto bajo la imagen" width="760">
 
+### [Abrir demo interactiva](https://tmarquez-mx.github.io/GNVIC/)
+
 </div>
 
 ---
