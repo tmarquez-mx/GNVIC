@@ -8,11 +8,6 @@
         content="GNVIC - Generador de Narrativas Visuales Interactivas y Críticas. Plataforma de co-creación de novelas gráficas, cómics y manga con perspectiva epistémica.">
     <meta name="theme-color" content="#050505">
     <title>GNVIC piloto taller — NARZU</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <meta property="og:title" content="GNVIC — Generador de Narrativas Visuales, Interactivas y Críticas">
-    <meta property="og:description" content="Plataforma de co-creación de narrativas visuales secuenciales como artefacto epistémico. Proyecto Artefactos Epistémicos, DCSP, Universidad Iberoamericana Ciudad de México.">
-    <meta property="og:image" content="inicio.jpg">
-    <meta property="og:type" content="website">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,15 +113,15 @@
         <!-- Imagen central que se funde con el fondo -->
         <div class="center-image-container">
             <div class="hero-image-wrapper">
-                <!-- NOTA: Guarda la imagen como 'inicio.jpg' en la raíz del repositorio para que se muestre aquí -->
-                <img src="inicio.jpg" alt="Ilustración central" class="hero-main-img"
-                    onerror="this.src='https://via.placeholder.com/1200x800/f6f6f6/888888?text=Por+favor,+guarda+la+imagen+como+inicio.jpg+en+la+raiz'">
+                <!-- NOTA: Guarda la imagen proporcionada como 'assets/inicio.jpg' en la misma carpeta para que se muestre aquí -->
+                <img src="assets/inicio.jpg" alt="Ilustración central" class="hero-main-img"
+                    onerror="this.src='https://via.placeholder.com/1200x800/f6f6f6/888888?text=Por+favor,+guarda+la+imagen+como+assets/inicio.jpg+en+esta+carpeta'">
 
                 <!-- Lupa interactiva de subtexto -->
                 <div class="lupa-obj">
                     <div class="lupa-glass">
-                        <img src="inicio.jpg" class="lupa-zoom-img" alt="Zoom interior"
-                            onerror="this.src='https://via.placeholder.com/1200x800/f6f6f6/888888?text=Por+favor,+guarda+la+imagen+como+inicio.jpg+en+la+raiz'">
+                        <img src="assets/inicio.jpg" class="lupa-zoom-img" alt="Zoom interior"
+                            onerror="this.src='https://via.placeholder.com/1200x800/f6f6f6/888888?text=Por+favor,+guarda+la+imagen+como+assets/inicio.jpg+en+esta+carpeta'">
                         <div class="lupa-text">
                             <span class="lupa-quijote">Cada parte de la imagen fotográfica lleva alguna información que
                                 contribuye a su afirmación total.</span>
@@ -134,6 +129,13 @@
                     </div>
                     <div class="lupa-handle"></div>
                 </div>
+
+                <button class="showcase-badge" type="button"
+                    title="Vitrina pública con el artefacto NARZU precargado. La generación en vivo es opcional y requiere clave propia de OpenRouter."
+                    onclick="abrirModalSobre()">
+                    <span class="showcase-badge__dot"></span>
+                    <span class="showcase-badge__text">Vitrina · contenido precargado</span>
+                </button>
             </div>
         </div>
 
@@ -785,7 +787,7 @@
                         El Generador de Narrativas Visuales Interactivas y Críticas (GNVIC) nace como continuación de la
                         iniciativa VIZIO que exploró una premisa simple pero potente: <strong
                             style="color: #fff; font-weight: 600;">la imagen sirve para pensar.</strong>
-                        Ahora como parte del proyecto <strong style="color: #fff; font-weight: 600;">“Artefactos
+                        Ahora como parte del proyecto <strong style="color: #fff; font-weight: 600;">“Aparatos
                             epistémicos”</strong>, la imagen se presenta como pensamiento y,
                         en sus formas narrativas, como materialización de argumentos.
                     </p>
@@ -804,18 +806,9 @@
                         style="font-size: 1.15rem; color: #b8b8b8; line-height: 1.5; margin-bottom: 3.5rem; font-weight: 300; letter-spacing: 0.5px;">
                         Al facilitar la exploración de dilemas filosóficos, sociológicos, políticos, históricos o
                         culturales, el GNVIC funciona como un <strong style="color: #fff; font-weight: 600;">laboratorio
-                            de ideas para mentes extendidas e híbridas</strong>: un espacio donde las categorías
+                            de ideas para mentes extendidas e híbrídas</strong>: un espacio donde las categorías
                         analíticas no se enuncian sino que se dramatizan,
                         donde la teoría no se explica sino que se habita.
-                    </p>
-
-                    <p
-                        style="font-size: 0.9rem; color: #8f8f8f; line-height: 1.6; margin-bottom: 3.5rem; font-weight: 300; letter-spacing: 0.3px; border-left: 2px solid var(--accent); padding-left: 1.25rem;">
-                        Esta es una <strong style="color: #d8d8d8; font-weight: 600;">vitrina pública</strong>: muestra el
-                        artefacto NARZU con su contenido precargado, de modo que la propuesta puede recorrerse de inicio a
-                        fin (artefacto, episodio, mesa de luz, cierre epistémico y exportación) sin configurar nada. La
-                        generación de imágenes y de texto en vivo es opcional y se activa solo si la persona usuaria
-                        configura su propia clave de OpenRouter.
                     </p>
 
                     <button class="btn-secondary"
@@ -859,12 +852,6 @@
             </div>
         </div>
     </div>
-    <button id="showcase-badge" class="showcase-badge" type="button"
-        title="Vitrina pública con el artefacto NARZU precargado. La generación en vivo es opcional y requiere clave propia de OpenRouter."
-        onclick="abrirModalSobre()">
-        <span class="showcase-badge__dot"></span>
-        <span class="showcase-badge__text">Vitrina · contenido precargado</span>
-    </button>
 
 </body>
 

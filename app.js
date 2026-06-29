@@ -1,12 +1,54 @@
-const PORTADA_DILEMA_SRC = 'portada_dilema_del_color.jpg';
+const PORTADA_DILEMA_SRC = 'assets/portada_dilema_del_color.jpg';
 const GNVIC_STORAGE_KEY = 'gnvic_piloto_taller_data_v1';
 const PILOT_MODE = true;
 const PILOT_MAX_VINETAS = 6;
 const PILOT_MAX_ITERATIONS = 3;
-// Vitrina pública: la app se experimenta completa con el contenido precargado de NARZU,
-// sin requerir clave. Si la persona configura su propia clave de OpenRouter, la generación
-// en vivo (imágenes y develación) se activa de forma opcional.
-const SHOWCASE_MODE = true;
+const DEMO_IMAGE_VARIANTS = {
+    'la_escuela': [
+        'assets/iteraciones/con_amor_noche.jpg',
+        'assets/iteraciones/con_amor_apurados.jpg'
+    ],
+    'novela_grafica_don_tico2': [
+        'assets/iteraciones/don_tico_tienda.jpg',
+        'assets/iteraciones/don_tico_afuera.jpg'
+    ],
+    'novela_grafica_pete': [
+        'assets/iteraciones/pete_en_prepa.jpg',
+        'assets/iteraciones/pete_en_clase.jpg'
+    ],
+    'novela_grafica_paz': [
+        'assets/iteraciones/paz_en_clase.jpg',
+        'assets/iteraciones/paz_prepa.jpg'
+    ],
+    'novela_grafica_dani': [
+        'assets/iteraciones/dani_en_patio.jpg',
+        'assets/iteraciones/dani_en_clase.jpg'
+    ],
+    'novela_grafica_prof_chat2': [
+        'assets/iteraciones/profe_chat_influencer.jpg',
+        'assets/iteraciones/profe_chat_en_clase.jpg'
+    ],
+    'novela_grafica_prof_maximiliano': [
+        'assets/iteraciones/maximiliano_acercamiento.jpg',
+        'assets/iteraciones/maximiliano_oficina.jpg'
+    ],
+    'novela_grafica_xochi': [
+        'assets/iteraciones/xochi_en_clase.jpg',
+        'assets/iteraciones/xochi_patio.jpg'
+    ],
+    'novela_grafica_prof_murcia': [
+        'assets/iteraciones/murcia_patio.jpg',
+        'assets/iteraciones/murcia_oficina.jpg'
+    ]
+};
+const PILOT_DEMO_KEYS_BY_PANEL = [
+    'la_escuela',
+    'novela_grafica_prof_murcia',
+    'novela_grafica_pete',
+    'novela_grafica_paz',
+    'novela_grafica_prof_chat2',
+    'novela_grafica_dani'
+];
 
 function getPortadaAssetSrc() {
     return `${encodeURI(PORTADA_DILEMA_SRC)}?refresh=${Date.now()}`;
@@ -23,14 +65,14 @@ const NARZU_PRELOAD = {
     desc_subtexto: 'El subtexto se ubica dentro de la filosofía de la tecnología, explorando el tenso debate contemporáneo entre humanistas, transhumanistas y el enfoque ingenieril puro.\n\nPor un lado, el determinismo tecnológico (representado por el Profe Chat) y las visiones transhumanistas abogan por la matematización del mundo y la inevitabilidad del progreso liderado por la Inteligencia Artificial (el formulario "Azul"). Esta perspectiva asume que todos los problemas humanos —educativos, sociales y existenciales— pueden reducirse a "problemas de datos".\n\nEn contraposición, figuras humanistas (como Maximiliano, Paz y Dani) reaccionan ante este inminente "reemplazo cognitivo". Desde la óptica Heideggeriana del "enmarcamiento" (donde la técnica nos reduce a recursos disponibles), hasta el miedo paralizante de volverse obsoleto, la obra materializa las distintas formas de resistencia.\n\nFinalmente, Xochi y Don Tico proponen salidas no dicotómicas: la apropiación crítica del código libre y la sabiduría práctica que integra la herramienta sin perder la esencia humana. La novela no busca demonizar la máquina, sino develar que la tecnología organiza el mundo social. Comprender estas fuerzas es el primer paso para elegir de forma autónoma nuestro futuro sociotécnico.',
     bibliografia: 'Bunge, M. (1985). Seudociencia e ideología como campos epistémicos. Alianza Editorial.\nFeenberg, A. (1991). Critical theory of technology. Oxford University Press.\nHeidegger, M. (1994). La pregunta por la técnica. En Conferencias y artículos. Serbal.',
     personajes: [
-        { nombre: 'Xochi', rol: 'Política crítica', desc: 'Refleja postura de Feenberg/Stallman. Origen: Captura corporativa del código.', rasgos: 'Expresión determinada', img: 'novela_grafica_xochi.jpg' },
-        { nombre: 'Pete', rol: 'Duda comunicativa', desc: 'Encarna la duda y refleja una postura de Habermas/Simondon. Origen: Diálogo ético-técnico.', rasgos: 'Joven, pensativo, atravesado por la incertidumbre', img: 'novela_grafica_pete.jpg' },
-        { nombre: 'Murcia', rol: 'Relativista polite', desc: 'Cultura digital vs. disciplina. Origen: Amor-odio TikTok.', rasgos: 'Relajada', img: 'novela_grafica_prof_murcia.jpg' },
-        { nombre: 'Maximiliano', rol: 'Tecnopesimista', desc: 'Refleja postura de Heidegger/Mumford. Gestell ontológico.', rasgos: 'Mayor, traje formal, ceño fruncido', img: 'novela_grafica_prof_maximiliano.jpg' },
-        { nombre: 'Profe Chat', rol: 'Tecnoutopista analítica', desc: 'Refleja postura de Bunge/Simon. Racionalidad instrumental.', rasgos: 'Amigable, moderno, entusiasta', img: 'novela_grafica_prof_chat2.jpg' },
-        { nombre: 'Dani', rol: 'Humanista defensivo', desc: 'Ellul vulgarizado. Origen: Frustración externalizada.', rasgos: 'A la defensiva', img: 'novela_grafica_dani.jpg' },
-        { nombre: 'Paz', rol: 'Humanista material', desc: 'Refleja postura de Illich/Mumford orgánico. Origen: Call center.', rasgos: 'Práctica, realista', img: 'novela_grafica_paz.jpg' },
-        { nombre: 'Don Tico', rol: 'Sabiduría práctica', desc: 'Refleja postura de Simondon maduro/Aristóteles. Origen: Phronesis del taller.', rasgos: 'Mayor, sabio, ropa de trabajo', img: 'novela_grafica_don_tico2.jpg' }
+        { nombre: 'Xochi', rol: 'Política crítica', desc: 'Refleja postura de Feenberg/Stallman. Origen: Captura corporativa del código.', rasgos: 'Expresión determinada', img: 'assets/novela_grafica_xochi.jpg' },
+        { nombre: 'Pete', rol: 'Duda comunicativa', desc: 'Encarna la duda y refleja una postura de Habermas/Simondon. Origen: Diálogo ético-técnico.', rasgos: 'Joven, pensativo, atravesado por la incertidumbre', img: 'assets/novela_grafica_pete.jpg' },
+        { nombre: 'Murcia', rol: 'Relativista polite', desc: 'Cultura digital vs. disciplina. Origen: Amor-odio TikTok.', rasgos: 'Relajada', img: 'assets/novela_grafica_prof_murcia.jpg' },
+        { nombre: 'Maximiliano', rol: 'Tecnopesimista', desc: 'Refleja postura de Heidegger/Mumford. Gestell ontológico.', rasgos: 'Mayor, traje formal, ceño fruncido', img: 'assets/novela_grafica_prof_maximiliano.jpg' },
+        { nombre: 'Profe Chat', rol: 'Tecnoutopista analítica', desc: 'Refleja postura de Bunge/Simon. Racionalidad instrumental.', rasgos: 'Amigable, moderno, entusiasta', img: 'assets/novela_grafica_prof_chat2.jpg' },
+        { nombre: 'Dani', rol: 'Humanista defensivo', desc: 'Ellul vulgarizado. Origen: Frustración externalizada.', rasgos: 'A la defensiva', img: 'assets/novela_grafica_dani.jpg' },
+        { nombre: 'Paz', rol: 'Humanista material', desc: 'Refleja postura de Illich/Mumford orgánico. Origen: Call center.', rasgos: 'Práctica, realista', img: 'assets/novela_grafica_paz.jpg' },
+        { nombre: 'Don Tico', rol: 'Sabiduría práctica', desc: 'Refleja postura de Simondon maduro/Aristóteles. Origen: Phronesis del taller.', rasgos: 'Mayor, sabio, ropa de trabajo', img: 'assets/novela_grafica_don_tico2.jpg' }
     ],
     guion_episodio_1: `### El Dilema del Color: Comprende y Elige\nComo guionista y director visual, presento la estructura y el guion para el primer número de la novela gráfica titulada **“yIyaj; vaj yIwIv” (Comprende, entonces elige)**. El estilo visual se basa en un **alto contraste en blanco y negro**, capturando la esencia de una preparatoria pública en la Ciudad de México que opera dentro de un **antiguo teatro abandonado**.\n\n### **Estructura del Número 1: "El Dilema del Color"**\n**Introducción:** Presentación del espacio: el teatro-escuela "Con Amor" y la atmósfera urbana de la CDMX.\n**Incidente Incitante:** La entrega de los formularios de orientación vocacional (Azul vs. Naranja).\n**Desarrollo:** Presentación de los protagonistas (PeT, Paz, Dani, Xochi) y el choque ideológico entre los profesores Chat y Maximiliano.\n**Punto de Giro:** La comprensión de que la elección no es solo académica, sino una postura ante la vida y la tecnología.\n\n### **Guion (Páginas 1-8)**\n\n**Página 1: El Escenario**\n**Viñeta 1:** Gran plano general del exterior del edificio. Es un teatro antiguo con arquitectura imponente pero descuidada, cables cruzando el cielo y el bullicio de una calle de barrio en la CDMX.\n**Viñeta 2:** Plano detalle del letrero en la entrada: "Preparatoria Pública: Con Amor". Se nota que el nombre fue añadido sobre una estructura vieja.\n**Viñeta 3:** Primer plano de una mano joven (PeT) sosteniendo un formulario arrugado mientras camina hacia la entrada.\n**Viñeta 4:** Plano medio de los estudiantes entrando; la luz del sol de la mañana crea sombras largas y dramáticas contra las columnas del teatro.\n\n**Página 2: La Contradicción Escolar**\n**Viñeta 1:** Interior del teatro transformado en aula. Los pupitres están dispuestos donde antes hubo butacas.\n**Viñeta 2:** La **Profe Murcia** está frente al grupo. En una mano sostiene un smartphone con el que acaba de hacerse una selfie, y con la otra señala una caja de madera.\n**Viñeta 3:** Plano de la Profe Murcia diciendo: "¡Celulares a la caja! La tecnología nos distrae de la verdadera educación", mientras su propia pantalla muestra una notificación de TikTok.\n**Viñeta 4:** Primer plano de **Dani**, con expresión de frustración, entregando su teléfono como si fuera el culpable de todos sus males.\n**Viñeta 5:** Plano detalle de los formularios que la Profe Murcia empieza a repartir: hojas de dos colores llamativos.\n\n**Página 3: El Formulario**\n**Viñeta 1:** Un plano cenital (desde arriba) de los formularios sobre un pupitre. Uno es **Azul** (IA y tecnología) y el otro es **Naranja** (Humanidades y social).\n**Viñeta 2:** La voz en off de la Profe Murcia: "Tienen una semana. Azul para el futuro del progreso; Naranja para el pasado de las ideas".\n**Viñeta 3:** **PeT** observa ambos papeles con duda. Su rostro refleja la "incertidumbre existencial" de quien no sabe qué camino tomar.\n**Viñeta 4:** **Xochi**, sentada detrás, mira el formulario azul con desconfianza, tachando el logo de la empresa patrocinadora con un marcador negro.\n\n**Página 4: Paz y el Ruido del Sistema**\n**Viñeta 1:** Primer plano de **Paz**. Lleva puestos unos auriculares grandes, tratando de aislarse del caos del salón.\n**Viñeta 2:** Flashback: Paz en un Call Center pequeño y oscuro, rodeada de pantallas que muestran errores técnicos y gente gritando.\n**Viñeta 3:** Paz mira el formulario naranja. En su mente, la tecnología no es progreso, sino una herramienta que "despoja a las personas de autonomía".\n**Viñeta 4:** **PeT** se acerca a Paz en el pasillo. "¿Ya elegiste, Paz?". Ella responde sin mirarlo: "Elegir es un lujo que el sistema no nos da realmente".\n\n**Página 5: El Evangelio según Chat**\n**Viñeta 1:** Cambio de escenario al laboratorio de cómputo. El **Profe Chat** está de pie sobre una silla, gesticulando con entusiasmo.\n**Viñeta 2:** Chat muestra su tablet a los alumnos: "¡El mundo es un problema de datos y nosotros somos los ingenieros para resolverlo!".\n**Viñeta 3:** Plano medio de los alumnos fascinados por el carisma de Chat, excepto Xochi, que tiene los brazos cruzados.\n**Viñeta 4:** Plano detalle de la pantalla de Chat: un video de su canal de YouTube con miles de "likes" y retórica tecnófila.\n**Viñeta 5:** Chat termina su discurso: "El formulario azul no es una opción, es el único acceso al mañana".\n\n**Página 6: La Sombra de Maximiliano**\n**Viñeta 1:** El **Profe Maximiliano** en su oficina llena de libros viejos y papeles amarillentos. La luz es escasa y melancólica.\n**Viñeta 2:** Maximiliano habla con PeT: "La técnica, muchacho, es un enmarcamiento que nos reduce a simples recursos disponibles".\n**Viñeta 3:** Primer plano de Maximiliano, sus ojos cansados tras las gafas: "No odies al aparato, odia la forma en que te obliga a relacionarte con el mundo".\n**Viñeta 4:** Plano de PeT saliendo de la oficina, sintiéndose más confundido que antes. El peso de la crítica de Maximiliano se siente en la atmósfera.\n\n**Página 7: El Contra-Hacker y el Miedo**\n**Viñeta 1:** En las escaleras del teatro, **Xochi** tiene una laptop abierta. Está mostrándole algo a **Dani**.\n**Viñeta 2:** Pantalla de la laptop: líneas de código y un mensaje de "Software Libre". Xochi dice: "No se trata de usar la IA, sino de quién es dueño del código".\n**Viñeta 3:** Dani retrocede, asustado: "Esas cosas solo sirven para reemplazarnos. Si fallo en el examen, será porque la máquina decidió que no sirvo".\n**Viñeta 4:** Xochi suspira: "Tu miedo es exactamente lo que ellos quieren para que no pelees por el control".\n\n**Página 8: El Refugio de Don Tico**\n**Viñeta 1:** Exterior de la tienda de **Don Tico**, justo al lado de la preparatoria. Él está afuera, leyendo un periódico de papel.\n**Viñeta 2:** Don Tico mira a los estudiantes salir con sus formularios de colores. Una pequeña sonrisa melancólica aparece en su rostro.\n**Viñeta 3:** PeT se detiene a comprar un dulce. Don Tico le dice: "Ni todo es cable, ni todo es papel, chamaco. Hay que saber usar las manos para no olvidar el alma".\n**Viñeta 4:** Plano final: PeT se aleja caminando por la calle de la CDMX, con el formulario azul en una mano y el naranja en la otra, mientras el sol se pone tras el teatro abandonado.`,
     fecha: new Date().toLocaleDateString(),
@@ -42,12 +84,12 @@ const NARZU_PRELOAD = {
             numVinetas: PILOT_MAX_VINETAS,
             personajes: ['Pete', 'Paz', 'Dani', 'Xochi', 'Murcia', 'Maximiliano', 'Profe Chat', 'Don Tico'],
             vinetas: [
-                { imgLocal: "la_escuela.jpg", textoGlobo: "Preparatoria Pública: Con Amor. Un antiguo teatro reconvertido en escuela.", forma: "panoramica", formaGlobo: "bubble-pill", posGlobo: "top" },
-                { imgLocal: "novela_grafica_prof_murcia.jpg", textoGlobo: "¡Celulares a la caja! La tecnología nos distrae de la verdadera educación.", forma: "vertical", formaGlobo: "bubble-shout", posGlobo: "top" },
-                { imgLocal: "novela_grafica_pete.jpg", textoGlobo: "¿Qué futuro me espera si no entiendo a los algoritmos?", forma: "vertical", formaGlobo: "bubble-pill", posGlobo: "center" },
-                { imgLocal: "novela_grafica_paz.jpg", textoGlobo: "Elegir es un lujo que el sistema no nos da realmente.", forma: "vertical", formaGlobo: "bubble-oval", posGlobo: "center" },
-                { imgLocal: "novela_grafica_prof_chat2.jpg", textoGlobo: "¡El mundo es un problema de datos y nosotros somos los ingenieros para resolverlo!", forma: "panoramica", formaGlobo: "bubble-pill", posGlobo: "top" },
-                { imgLocal: "novela_grafica_dani.jpg", textoGlobo: "Si fallo, la máquina decidirá que no sirvo. Xochi dice que ese miedo también es parte del sistema.", forma: "vertical", formaGlobo: "bubble-pill", posGlobo: "center" }
+                { imgLocal: "assets/la_escuela.jpg", textoGlobo: "Preparatoria Pública: Con Amor. Un antiguo teatro reconvertido en escuela.", forma: "panoramica", formaGlobo: "bubble-pill", posGlobo: "top" },
+                { imgLocal: "assets/novela_grafica_prof_murcia.jpg", textoGlobo: "¡Celulares a la caja! La tecnología nos distrae de la verdadera educación.", forma: "panoramica", formaGlobo: "bubble-shout", posGlobo: "top" },
+                { imgLocal: "assets/novela_grafica_pete.jpg", textoGlobo: "¿Qué futuro me espera si no entiendo a los algoritmos?", forma: "panoramica", formaGlobo: "bubble-pill", posGlobo: "center" },
+                { imgLocal: "assets/novela_grafica_paz.jpg", textoGlobo: "Elegir es un lujo que el sistema no nos da realmente.", forma: "panoramica", formaGlobo: "bubble-oval", posGlobo: "center" },
+                { imgLocal: "assets/novela_grafica_prof_chat2.jpg", textoGlobo: "¡El mundo es un problema de datos y nosotros somos los ingenieros para resolverlo!", forma: "panoramica", formaGlobo: "bubble-pill", posGlobo: "top" },
+                { imgLocal: "assets/novela_grafica_dani.jpg", textoGlobo: "Si fallo, la máquina decidirá que no sirvo. Xochi dice que ese miedo también es parte del sistema.", forma: "panoramica", formaGlobo: "bubble-pill", posGlobo: "center" }
             ]
         }
     ]
@@ -2136,7 +2178,15 @@ function abrirEpisodioExistente(epIndex) {
         guion: ep.trama,
         numV: PILOT_MAX_VINETAS,
         personajesSeleccionados: ep.personajes || [],
-        vinetas: ep.vinetas || []
+        vinetas: (ep.vinetas || []).map((vineta) => {
+            const baseImage = vineta.imgLocal || vineta.variantes?.[0] || 'assets/la_escuela.jpg';
+            return {
+                ...vineta,
+                forma: vineta.formaPersonalizada ? vineta.forma : 'panoramica',
+                variantes: [baseImage],
+                varianteActiva: 0
+            };
+        })
     };
     navigateTo('vista-mesa-de-luz');
     document.getElementById('vml-titulo').innerText = currentChapterData.capNombre;
@@ -2419,37 +2469,37 @@ async function activarMesaDeLuz() {
                 numero: 1,
                 textoGlobo: "",
                 forma: "panoramica",
-                imgLocal: "la_escuela.jpg"
+                imgLocal: "assets/la_escuela.jpg"
             },
             {
                 numero: 2,
                 textoGlobo: "¡Celulares a la caja! La tecnología nos distrae de la verdadera educación.",
-                forma: "cuadrada",
-                imgLocal: "novela_grafica_prof_murcia.jpg"
+                forma: "panoramica",
+                imgLocal: "assets/novela_grafica_prof_murcia.jpg"
             },
             {
                 numero: 3,
                 textoGlobo: "¿Qué futuro me espera si no entiendo a los algoritmos?",
-                forma: "vertical",
-                imgLocal: "novela_grafica_pete.jpg"
+                forma: "panoramica",
+                imgLocal: "assets/novela_grafica_pete.jpg"
             },
             {
                 numero: 4,
                 textoGlobo: "Elegir es un lujo que el sistema no nos da realmente.",
-                forma: "cuadrada",
-                imgLocal: "novela_grafica_paz.jpg"
+                forma: "panoramica",
+                imgLocal: "assets/novela_grafica_paz.jpg"
             },
             {
                 numero: 5,
                 textoGlobo: "¡El mundo es un problema de datos y nosotros somos los ingenieros para resolverlo! El formulario azul es el único acceso al mañana.",
                 forma: "panoramica",
-                imgLocal: "novela_grafica_prof_chat2.jpg"
+                imgLocal: "assets/novela_grafica_prof_chat2.jpg"
             },
             {
                 numero: 6,
                 textoGlobo: "Si fallo, la máquina decidirá que no sirvo. Xochi dice que ese miedo también es parte del sistema.",
-                forma: "vertical",
-                imgLocal: "novela_grafica_dani.jpg"
+                forma: "panoramica",
+                imgLocal: "assets/novela_grafica_dani.jpg"
             }
         ];
         renderMesaLuz();
@@ -2482,6 +2532,19 @@ function guardarMesaDeLuz() {
     showToast({ title: 'Mesa de luz guardada', message: 'Los cambios del episodio quedaron guardados.', type: 'success' });
 }
 
+function getDemoVariantsForPanel(vineta, index) {
+    const rawSource = String(vineta?.imgLocal || '');
+    const resolvedSource = String(resolveDisplayImageSource(rawSource) || rawSource).toLowerCase();
+    const matchedKey = Object.keys(DEMO_IMAGE_VARIANTS).find((key) => resolvedSource.includes(key));
+    const fallbackKey = PILOT_DEMO_KEYS_BY_PANEL[index];
+    return DEMO_IMAGE_VARIANTS[matchedKey || fallbackKey] || [];
+}
+
+function getNextDemoVariant(vineta, index) {
+    const currentVariants = Array.isArray(vineta?.variantes) ? vineta.variantes : [];
+    return getDemoVariantsForPanel(vineta, index).find((src) => !currentVariants.includes(src)) || '';
+}
+
 function renderMesaLuz() {
     const grid = document.getElementById('vml-panels-grid');
     const totalPanels = Math.min((currentChapterData.vinetas || []).length, PILOT_MAX_VINETAS);
@@ -2502,29 +2565,33 @@ function renderMesaLuz() {
     `;
     // Build all HTML at once to avoid O(n^2) innerHTML concatenation
     const panelsHtml = currentChapterData.vinetas.map((v, i) => {
-        const varCount = (v.variantes && v.variantes.length > 0) ? (v.varianteActiva + 1) + '/' + v.variantes.length : '0/0';
-        const navDisabled = (!v.variantes || v.variantes.length <= 1) ? 'disabled' : '';
-        const iterDisabled = (v.variantes && v.variantes.length >= PILOT_MAX_ITERATIONS) ? 'disabled' : '';
+        const currentIteration = (v.variantes && v.variantes.length > 0) ? (v.varianteActiva + 1) : 1;
+        const availableVariants = Array.isArray(v.variantes) ? v.variantes.length : 0;
+        const previousDisabled = currentIteration <= 1 ? 'disabled' : '';
+        const nextDisabled = currentIteration >= availableVariants ? 'disabled' : '';
+        const iterDisabled = availableVariants >= PILOT_MAX_ITERATIONS ? 'disabled' : '';
         const narratorText = v.textoNarrador || '';
         const narratorClass = narratorText.trim() ? '' : 'is-hidden';
         return `
         <div class="panel-card light-table-panel" id="panel-${i}" data-forma="${v.forma}">
             <div class="left-col-preview light-table-panel__preview">
-                <div class="panel-sequence-badge" aria-label="Viñeta ${i + 1} de ${PILOT_MAX_VINETAS}">
-                    <span class="panel-sequence-badge__number">${i + 1}</span>
-                    <span class="panel-sequence-badge__total">/${PILOT_MAX_VINETAS}</span>
+                <div class="panel-sequence-badge" aria-label="Iteración ${currentIteration} de ${PILOT_MAX_ITERATIONS}">
+                    <span class="panel-sequence-badge__number" id="iteration-badge-${i}">${currentIteration}</span>
+                    <span class="panel-sequence-badge__total">/${PILOT_MAX_ITERATIONS}</span>
                 </div>
                 <div class="panel-img-container light-table-panel__image-area shape-${v.forma}" id="pimg-${i}">
                     <button class="btn-secondary" onclick="generarImagenIA(${i})">Generar Imagen API</button>
                 </div>
                 <div id="narrador-preview-${i}" class="narrator-preview ${narratorClass}">${narratorText}</div>
                 <div id="iter-controls-${i}" class="variant-controls">
-                    <div class="variant-controls__nav">
-                        <button class="btn-secondary variant-controls__button" onclick="cambiarVariante(${i}, -1)" ${navDisabled}>&larr;</button>
-                        <span class="variant-controls__count" id="variant-count-${i}">${varCount}</span>
-                        <button class="btn-secondary variant-controls__button" onclick="cambiarVariante(${i}, 1)" ${navDisabled}>&rarr;</button>
+                    <div class="variant-controls__nav" aria-label="Recorrer imágenes generadas">
+                        <button class="variant-controls__arrow" id="variant-prev-${i}" type="button" onclick="cambiarVariante(${i}, -1)" aria-label="Ver iteración anterior" ${previousDisabled}>&larr;</button>
+                        <button class="variant-controls__arrow" id="variant-next-${i}" type="button" onclick="cambiarVariante(${i}, 1)" aria-label="Ver iteración siguiente" ${nextDisabled}>&rarr;</button>
                     </div>
-                    <button class="btn-secondary variant-controls__iterate" onclick="iterarImagen(${i})" title="Iterar con IA (límite ${PILOT_MAX_ITERATIONS})" id="iter-btn-${i}" ${iterDisabled}>&#x2728;</button>
+                    <div class="variant-controls__action">
+                        <span class="variant-controls__hint">Simulación de iteración</span>
+                        <button class="btn-secondary variant-controls__iterate" onclick="iterarImagen(${i})" title="Generar nueva imagen simulada" aria-label="Generar nueva imagen simulada con IA" id="iter-btn-${i}" ${iterDisabled}>&#x2728;</button>
+                    </div>
                 </div>
             </div>
             <div class="panel-mando">
@@ -2586,6 +2653,7 @@ function renderMesaLuz() {
 
 function cambiarForma(index, forma) {
     currentChapterData.vinetas[index].forma = forma;
+    currentChapterData.vinetas[index].formaPersonalizada = true;
     // Update only the affected panel's shape class instead of re-rendering everything
     const container = document.getElementById(`pimg-${index}`);
     if (container) {
@@ -2629,7 +2697,10 @@ function actualizarNarrador(i, val) {
 function shouldContainPanelImage(vineta) {
     const variantIndex = Number.isInteger(vineta?.varianteActiva) ? vineta.varianteActiva : 0;
     const src = ((vineta?.variantes && vineta.variantes[variantIndex]) || vineta?.imgLocal || '').toLowerCase();
-    return src.includes('la_escuela.jpg') || src.includes('la_escuela.png') || src.includes('la_escuela_embedded.png');
+    return src.includes('la_escuela.jpg')
+        || src.includes('la_escuela.png')
+        || src.includes('la_escuela_embedded.png')
+        || src.includes('con_amor_');
 }
 
 function asegurarVarianteBase(i) {
@@ -2640,7 +2711,7 @@ function asegurarVarianteBase(i) {
     if (!Number.isInteger(v.varianteActiva)) v.varianteActiva = 0;
 
     if (v.variantes.length === 0) {
-        v.variantes.push(v.imgLocal || "la_escuela.jpg");
+        v.variantes.push(v.imgLocal || "assets/la_escuela.jpg");
         v.varianteActiva = 0;
     }
 }
@@ -2668,28 +2739,29 @@ async function generarImagenIA(i, forceNew = false) {
     const container = document.getElementById(`pimg-${i}`);
     if (!container) return;
 
-    const imageConfig = getImageGenerationConfig();
-    if (!imageConfig.apiKey || !imageConfig.model) {
-        prepararImagenPanel(i);
-        if (SHOWCASE_MODE) {
-            showToast({
-                title: 'Vitrina de demostración',
-                message: 'Esta viñeta muestra la imagen precargada del artefacto NARZU. Para generar imágenes nuevas en vivo, configura tu propia clave de OpenRouter desde Configuración API.',
-                type: 'info',
-                duration: 8000
-            });
-        } else {
-            showToast({
-                title: 'Falta configuración de imagen',
-                message: 'Configura tu API key y un modelo de imagen de OpenRouter antes de generar una viñeta.',
-                type: 'error',
-                duration: 7000
-            });
-        }
+    asegurarVarianteBase(i);
+    const vineta = currentChapterData?.vinetas?.[i];
+    if (vineta?.variantes?.length >= PILOT_MAX_ITERATIONS) {
+        showToast({
+            title: 'Límite alcanzado',
+            message: `Esta viñeta ya tiene ${PILOT_MAX_ITERATIONS} versiones.`,
+            type: 'info'
+        });
         return;
     }
 
-    asegurarVarianteBase(i);
+    const imageConfig = getImageGenerationConfig();
+    if (!imageConfig.apiKey || !imageConfig.model) {
+        prepararImagenPanel(i);
+        showToast({
+            title: 'Falta configuración de imagen',
+            message: 'Configura tu API key y un modelo de imagen de OpenRouter antes de generar una viñeta.',
+            type: 'error',
+            duration: 7000
+        });
+        return;
+    }
+
     container.innerHTML = '<div class="ui-loading-message"><div class="spinner"></div><div class="ui-loading-label">Generando con OpenRouter...</div></div>';
 
     try {
@@ -2739,42 +2811,55 @@ function actualizarDisplayVinetta(i) {
     
     const isExternal = displayImgFile.startsWith('http');
     const fitClass = objectFit === 'contain' ? 'panel-image--contain' : 'panel-image--cover';
+    const imagePosition = String(displayImgFile).includes('murcia_patio.jpg') ? 'center top' : 'center center';
     container.innerHTML = `
-        <img id="vimg-${i}" src="${displayImgFile}" ${isExternal ? 'crossorigin="anonymous"' : ''} class="panel-image ${fitClass}" alt="Viñeta ${i+1}" onerror="mostrarErrorImagenPanel(${i})">
+        <img id="vimg-${i}" src="${displayImgFile}" ${isExternal ? 'crossorigin="anonymous"' : ''} class="panel-image ${fitClass}" style="object-position:${imagePosition}" alt="Viñeta ${i+1}" onerror="mostrarErrorImagenPanel(${i})">
         <div id="bubble-${i}" class="bubble-base ${finalClass}" style="${posStyle} transform: ${tForm}; display:${displayValue};">${text}</div>
     `;
 
-    // Actualizar contador de variantes si existe
-    const countSpan = document.getElementById(`variant-count-${i}`);
-    if (countSpan) countSpan.innerText = `${v.varianteActiva + 1}/${v.variantes.length}`;
-    
-    // Habilitar/deshabilitar pipes de navegación
-    const controls = document.getElementById(`iter-controls-${i}`);
-    if (controls) {
-        const btns = controls.querySelectorAll('button');
-        btns[0].disabled = (v.varianteActiva <= 0);
-        btns[1].disabled = (v.varianteActiva >= v.variantes.length - 1);
-    }
+    const iterationBadge = document.getElementById(`iteration-badge-${i}`);
+    if (iterationBadge) iterationBadge.innerText = v.varianteActiva + 1;
+    const previousButton = document.getElementById(`variant-prev-${i}`);
+    if (previousButton) previousButton.disabled = v.varianteActiva <= 0;
+    const nextButton = document.getElementById(`variant-next-${i}`);
+    if (nextButton) nextButton.disabled = v.varianteActiva >= v.variantes.length - 1;
+    const demoButton = document.getElementById(`iter-btn-${i}`);
+    if (demoButton) demoButton.disabled = v.variantes.length >= PILOT_MAX_ITERATIONS;
 }
 
 function iterarImagen(i) {
     const v = currentChapterData.vinetas[i];
-    if (!v.variantes) v.variantes = [];
-    
+    asegurarVarianteBase(i);
+
     if (v.variantes.length >= PILOT_MAX_ITERATIONS) {
         showToast({ title: 'Límite alcanzado', message: `Esta viñeta ya tiene ${PILOT_MAX_ITERATIONS} iteraciones.`, type: 'info' });
         return;
     }
+
+    const demoVariant = getNextDemoVariant(v, i);
+    if (demoVariant) {
+        v.variantes.push(demoVariant);
+        v.varianteActiva = v.variantes.length - 1;
+        actualizarDisplayVinetta(i);
+        saveData();
+        showToast({
+            title: 'Variante preparada',
+            message: `Se mostró la versión ${v.varianteActiva + 1} de ${PILOT_MAX_ITERATIONS}.`,
+            type: 'success'
+        });
+        return;
+    }
+
     generarImagenIA(i, true);
 }
 
 function cambiarVariante(i, offset) {
-    const v = currentChapterData.vinetas[i];
+    const v = currentChapterData?.vinetas?.[i];
+    if (!v || !Array.isArray(v.variantes)) return;
     const newIndex = v.varianteActiva + offset;
-    if (newIndex >= 0 && newIndex < (v.variantes ? v.variantes.length : 0)) {
-        v.varianteActiva = newIndex;
-        actualizarDisplayVinetta(i);
-    }
+    if (newIndex < 0 || newIndex >= v.variantes.length) return;
+    v.varianteActiva = newIndex;
+    actualizarDisplayVinetta(i);
 }
 
 function descargarMock(i) {
@@ -3041,11 +3126,6 @@ function resolveImageSourceForPdf(src) {
 function resolveDisplayImageSource(src) {
     if (!src || typeof src !== 'string') return src;
     if (src.startsWith('data:') || src.startsWith('http')) return src;
-
-    // Vitrina con archivos en la raíz del repositorio: si algún dato guardado
-    // conserva el prefijo 'assets/' de una versión anterior, se normaliza al
-    // nombre de archivo suelto para que cargue desde la raíz.
-    if (src.startsWith('assets/')) src = src.slice('assets/'.length);
 
     const cleanSrc = src.split('#')[0].split('?')[0];
     const fileName = decodeURIComponent(cleanSrc.split('/').pop() || cleanSrc);
