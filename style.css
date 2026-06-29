@@ -482,58 +482,6 @@ h1 {
     mask-image: radial-gradient(ellipse at center, black 50%, transparent 98%);
 }
 
-.showcase-badge {
-    position: absolute;
-    top: 1rem;
-    right: max(11%, calc((100% - 1120px) / 2));
-    z-index: 12;
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    width: min(50%, 560px);
-    margin: 0;
-    padding: 0.7rem 1rem;
-    border: 1px solid rgba(224, 0, 52, 0.78);
-    border-radius: 4px;
-    background: rgba(5, 5, 5, 0.86);
-    color: rgba(255, 255, 255, 0.9);
-    cursor: pointer;
-    text-align: left;
-    backdrop-filter: blur(8px);
-}
-
-.showcase-badge__dot {
-    width: 8px;
-    height: 8px;
-    flex: 0 0 8px;
-    border-radius: 50%;
-    background: var(--color-accent);
-    box-shadow: 0 0 0 5px rgba(224, 0, 52, 0.16);
-}
-
-.showcase-badge__text {
-    overflow: hidden;
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-    .showcase-badge {
-        top: 0.5rem;
-        right: 5%;
-        width: 50%;
-        padding: 0.55rem 0.7rem;
-    }
-
-    .showcase-badge__text {
-        font-size: 0.58rem;
-    }
-}
-
 .lupa-obj {
     position: absolute;
     width: 120px;
