@@ -12,11 +12,7 @@
 
 <br>
 
-<img src="inicio.jpg" alt="Ver demo interactiva" width="760">
-
-
-[VER demo interactiva](https://tmarquez-mx.github.io/GNVIC)
-
+<img src="assets/inicio.jpg" alt="Pantalla de inicio de GNVIC, con la lupa interactiva que descubre el subtexto bajo la imagen" width="760">
 
 </div>
 

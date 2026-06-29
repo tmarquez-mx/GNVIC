@@ -2110,43 +2110,82 @@ select,
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-4);
     margin-top: var(--space-5);
-    padding: var(--space-2);
-    background: var(--color-surface-soft);
+    padding: var(--space-3) var(--space-4);
+    background: rgba(224, 0, 52, 0.06);
+    border: 1px solid rgba(224, 0, 52, 0.22);
     border-radius: var(--radius-md);
 }
 
 .variant-controls__nav {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--space-2);
     align-items: center;
 }
 
-.variant-controls__button {
-    width: auto;
-    padding: var(--space-2) var(--space-6);
+.variant-controls__arrow {
+    width: 34px;
+    height: 30px;
+    padding: 0;
     margin-bottom: 0;
-    font-size: var(--font-size-sm);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 0.95rem;
+    cursor: pointer;
 }
 
-.variant-controls__count {
+.variant-controls__arrow:hover:not(:disabled) {
+    border-color: rgba(224, 0, 52, 0.7);
+    background: rgba(224, 0, 52, 0.14);
+}
+
+.variant-controls__arrow:disabled {
+    opacity: 0.14;
+    cursor: default;
+}
+
+.variant-controls__action {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.variant-controls__hint {
     color: var(--color-text-muted);
-    font-size: var(--font-size-md);
-    font-family: monospace;
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .variant-controls__iterate {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
     border-radius: var(--radius-circle);
     padding: 0;
     margin-bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-size-body);
-    background: var(--color-surface-hover);
-    border: 1px solid var(--color-border-control);
+    color: #ffffff;
+    font-size: 1.25rem;
+    background: var(--color-accent);
+    border: 2px solid #ff426d;
+    box-shadow: 0 0 0 4px rgba(224, 0, 52, 0.13), 0 8px 22px rgba(224, 0, 52, 0.3);
+}
+
+.variant-controls__iterate:hover:not(:disabled) {
+    background: #ff174c;
+    border-color: #ff6b8d;
+    transform: translateY(-1px);
+}
+
+.variant-controls__iterate:disabled {
+    box-shadow: none;
+    opacity: 0.42;
 }
 
 .panel-mando {
@@ -3500,6 +3539,13 @@ select,
         justify-content: space-between;
     }
 
+    .variant-controls {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-4);
+    }
+
     .panel-card {
         padding: var(--space-8) !important;
     }
@@ -3538,72 +3584,4 @@ select,
     .toast-region {
         left: var(--space-7);
     }
-}
-
-/* ============================================================
-   Distintivo de vitrina (showcase) — indicador honesto de que
-   el contenido mostrado es el artefacto NARZU precargado.
-   ============================================================ */
-.showcase-badge {
-    position: fixed;
-    left: 96px;
-    bottom: 1.25rem;
-    z-index: 60;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.45rem 0.85rem;
-    background: rgba(10, 10, 10, 0.82);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 999px;
-    color: var(--text-muted, #a0a0a0);
-    font-family: inherit;
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    opacity: 0.62;
-    transition: opacity 0.25s ease, border-color 0.25s ease, color 0.25s ease;
-}
-
-.showcase-badge:hover,
-.showcase-badge:focus-visible {
-    opacity: 1;
-    border-color: var(--accent, #E00034);
-    color: var(--text-main, #fcfcfc);
-    outline: none;
-}
-
-.showcase-badge__dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent, #E00034);
-    box-shadow: 0 0 0 0 rgba(224, 0, 52, 0.5);
-    animation: showcase-pulse 2.4s ease-out infinite;
-    flex: 0 0 auto;
-}
-
-@keyframes showcase-pulse {
-    0% { box-shadow: 0 0 0 0 rgba(224, 0, 52, 0.45); }
-    70% { box-shadow: 0 0 0 7px rgba(224, 0, 52, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(224, 0, 52, 0); }
-}
-
-@media (max-width: 640px) {
-    .showcase-badge {
-        left: 0.75rem;
-        bottom: 0.75rem;
-        font-size: 0.62rem;
-        padding: 0.4rem 0.7rem;
-    }
-    .showcase-badge__text {
-        display: none;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .showcase-badge__dot { animation: none; }
 }
