@@ -49,6 +49,14 @@ const PILOT_DEMO_KEYS_BY_PANEL = [
     'novela_grafica_prof_chat2',
     'novela_grafica_dani'
 ];
+const PILOT_BASE_IMAGES_BY_PANEL = [
+    'assets/la_escuela.jpg',
+    'assets/novela_grafica_prof_murcia.jpg',
+    'assets/novela_grafica_pete.jpg',
+    'assets/novela_grafica_paz.jpg',
+    'assets/novela_grafica_prof_chat2.jpg',
+    'assets/novela_grafica_dani.jpg'
+];
 
 function getPortadaAssetSrc() {
     return `${encodeURI(PORTADA_DILEMA_SRC)}?refresh=${Date.now()}`;
@@ -2178,10 +2186,13 @@ function abrirEpisodioExistente(epIndex) {
         guion: ep.trama,
         numV: PILOT_MAX_VINETAS,
         personajesSeleccionados: ep.personajes || [],
-        vinetas: (ep.vinetas || []).map((vineta) => {
-            const baseImage = vineta.imgLocal || vineta.variantes?.[0] || 'assets/la_escuela.jpg';
+        vinetas: (ep.vinetas || []).map((vineta, index) => {
+            const baseImage = PILOT_BASE_IMAGES_BY_PANEL[index]
+                || resolveDisplayImageSource(vineta.imgLocal || vineta.variantes?.[0])
+                || 'assets/la_escuela.jpg';
             return {
                 ...vineta,
+                imgLocal: baseImage,
                 forma: vineta.formaPersonalizada ? vineta.forma : 'panoramica',
                 variantes: [baseImage],
                 varianteActiva: 0
